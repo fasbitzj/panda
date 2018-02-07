@@ -13,6 +13,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>spring-mvc</module>
+        <module>jeecg</module>
+        <module>data-view</module>
     </modules>
 
 
