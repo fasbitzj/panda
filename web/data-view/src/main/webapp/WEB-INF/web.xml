@@ -64,7 +64,7 @@
         <init-param>
             <!--serverName:本项目的ip+port -->
             <param-name>serverName</param-name>
-            <param-value>http://127.0.0.1:8080/</param-value>
+            <param-value>http://10.1.50.145:8080/</param-value>
         </init-param>
         <init-param>
             <param-name>useSession</param-name>
@@ -92,7 +92,7 @@
         </init-param>
         <init-param>
             <param-name>serverName</param-name>
-            <param-value>http://127.0.0.1:8080/</param-value>
+            <param-value>http://10.1.50.145:8080/</param-value>
         </init-param>
     </filter>
     <filter-mapping>

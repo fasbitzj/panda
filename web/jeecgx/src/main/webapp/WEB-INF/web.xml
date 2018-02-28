@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0">
+	<display-name>Jeecg 微云快速开发平台</display-name>
+	<context-param>
+		<param-name>webAppRootKey</param-name>
+		<param-value>jeecg-3.7.1</param-value>
+	</context-param>
+	<context-param>
+		<param-name>log4jConfigLocation</param-name>
+		<param-value>classpath:log4j.properties</param-value>
+	</context-param>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath*:spring-*.xml</param-value>
+	</context-param>
+	<filter>
+		<filter-name>openSessionInViewFilter</filter-name>
+		<filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
+		<init-param>
+			<param-name>singleSession</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>openSessionInViewFilter</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>
+	<!--使rest风格url对应的controller支持延迟加载-->
+	<filter-mapping>
+		<filter-name>openSessionInViewFilter</filter-name>
+		<url-pattern>/rest/*</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<description>字符集过滤器</description>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<description>字符集编码</description>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter>
+		<filter-name>druidWebStatFilter</filter-name>
+		<filter-class>com.alibaba.druid.support.http.WebStatFilter</filter-class>
+		<init-param>
+			<param-name>exclusions</param-name>
+			<param-value>/css/*,/context/*,/plug-in/*,*.js,*.css,*/druid*,/attached/*,*.jsp</param-value>
+		</init-param>
+		<init-param>
+			<param-name>principalSessionName</param-name>
+			<param-value>sessionInfo</param-value>
+		</init-param>
+		<init-param>
+			<param-name>sessionStatEnable</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>profileEnable</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>druidWebStatFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter>
+		<filter-name>ecsideExport</filter-name>
+		<filter-class>org.jeecgframework.core.aop.GZipFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>ecsideExport</filter-name>
+		<url-pattern>*</url-pattern>
+	</filter-mapping>
+	<listener>
+		<description>Introspector缓存清除监听器</description>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+	</listener>
+	<listener>
+		<description>spring监听器</description>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<description>request监听器</description>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+	<listener>
+		<description>系统初始化监听器</description>
+		<listener-class>org.jeecgframework.web.system.listener.InitListener</listener-class>
+	</listener>
+	<listener>
+		<description>在线用户监听器</description>
+		<listener-class>org.jeecgframework.web.system.listener.OnlineListener</listener-class>
+	</listener>
+
+	<servlet>
+		<description>spring mvc servlet</description>
+		<servlet-name>springMvc</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<description>spring mvc 配置文件</description>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath*:spring-mvc.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>springMvc</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>springMvc</servlet-name>
+		<url-pattern>*.action</url-pattern>
+	</servlet-mapping>
+	
+
+	<!-- 集成cxf webservice接口
+	 <servlet>  
+        <description>Apache CXF Endpoint</description>  
+        <display-name>cxf</display-name>  
+        <servlet-name>cxf</servlet-name>  
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>  
+        <load-on-startup>2</load-on-startup>  
+    </servlet>  
+    <servlet-mapping>  
+        <servlet-name>cxf</servlet-name>  
+        <url-pattern>/cxf/*</url-pattern>  
+    </servlet-mapping> 
+     -->
+	<!-- restUrl风格配置 -->
+	<servlet>
+		<servlet-name>restSpringMvc</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<description>spring mvc 配置文件</description>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath*:spring-mvc.xml</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>restSpringMvc</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+	
+	<!-- druid -->
+	<servlet>
+		<servlet-name>druidStatView</servlet-name>
+		<servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>druidStatView</servlet-name>
+		<url-pattern>/webpage/system/druid/*</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 验证码 -->
+    <servlet>
+        <servlet-name>RandCodeImage</servlet-name>
+        <servlet-class>org.jeecgframework.web.system.servlet.RandCodeImageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RandCodeImage</servlet-name>
+        <url-pattern>/randCodeImage</url-pattern>
+    </servlet-mapping>
+
+	<!-- ****************** 单点登录开始 ********************-->
+	<!-- 用于实现单点登出功能  可选 -->
+	<listener>
+		<listener-class>org.jasig.cas.client.session.SingleSignOutHttpSessionListener</listener-class>
+	</listener>
+
+	<!-- 该过滤器用于实现单点登出功能，单点退出配置，一定要放在其他filter之前 可选 -->
+	<filter>
+		<filter-name>CAS Single Sign Out Filter</filter-name>
+		<filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>
+		<init-param>
+			<param-name>casServerUrlPrefix</param-name>
+			<param-value>http://10.1.210.50:8080/cas/</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>CAS Single Sign Out Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- 该过滤器负责用户的认证工作，必须 -->
+	<filter>
+		<filter-name>CASFilter</filter-name>
+		<filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
+		<init-param>
+			<!--casServerLoginUrl:cas服务的登陆url -->
+			<param-name>casServerLoginUrl</param-name>
+			<param-value>http://10.1.210.50:8080/cas/login</param-value>
+		</init-param>
+		<init-param>
+			<!--serverName:本项目的ip+port -->
+			<param-name>serverName</param-name>
+			<param-value>http://10.1.50.145:8080/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>useSession</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<param-name>redirectAfterValidation</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>CASFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- 该过滤器负责对Ticket的校验工作，必须-->
+	<filter>
+		<filter-name>CAS Validation Filter</filter-name>
+		<filter-class>
+			org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter
+		</filter-class>
+		<init-param>
+			<param-name>casServerUrlPrefix</param-name>
+			<param-value>http://10.1.210.50:8080/cas/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>serverName</param-name>
+			<param-value>http://10.1.50.145:8080/</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>CAS Validation Filter</filter-name>
+		<!-- 对test做登录拦截-->
+		<url-pattern>/loginController.do</url-pattern>
+	</filter-mapping>
+
+	<!-- 该过滤器对HttpServletRequest请求包装， 可通过HttpServletRequest的getRemoteUser()方法获得登录用户的登录名，可选 -->
+
+	<filter>
+		<filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+		<filter-class>
+			org.jasig.cas.client.util.HttpServletRequestWrapperFilter
+		</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- 该过滤器使得可以通过org.jasig.cas.client.util.AssertionHolder来获取用户的登录名。
+         比如AssertionHolder.getAssertion().getPrincipal().getName()。
+         这个类把Assertion信息放在ThreadLocal变量中，这样应用程序不在web层也能够获取到当前登录信息 -->
+	<filter>
+		<filter-name>CAS Assertion Thread Local Filter</filter-name>
+		<filter-class>org.jasig.cas.client.util.AssertionThreadLocalFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CAS Assertion Thread Local Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- ****************** 单点登录结束 ********************-->
+    
+	<!-- 404错误页面 -->
+    <error-page>
+        <error-code>404</error-code>
+        <location>/webpage/common/404.htm</location>
+    </error-page>
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+	<welcome-file-list>
+		<welcome-file>/webpage/login/login.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>

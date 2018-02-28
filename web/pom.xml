@@ -15,6 +15,7 @@
         <module>spring-mvc</module>
         <module>jeecg</module>
         <module>data-view</module>
+        <module>jeecgx</module>
     </modules>
 
 
