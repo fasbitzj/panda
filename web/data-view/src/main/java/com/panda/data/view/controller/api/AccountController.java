@@ -20,6 +20,6 @@ public class AccountController {
     public Object getAccount(String name) {
         Account account = accountCacheService.getAccountByName(name);
         System.out.println(account);
-        return accountCacheService.getAccountList();
+        return accountCacheService.getAccountList().toString();
     }
 }
