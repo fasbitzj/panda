@@ -11,6 +11,7 @@
     <modules>
         <module>cas</module>
         <module>web</module>
+        <module>micre-server</module>
     </modules>
 
 
