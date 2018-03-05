@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+       <bean id="applicationContextUtil" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+              <property name="locations">
+                     <list>
+                            <value>classpath*:META-INF/conf/*.properties</value>
+                     </list>
+              </property>
+       </bean>
+
+       <bean id="dataExecutor" class="com.panda.mysql.mybatis.support.orm.DataExecutor">
+              <property name="corePoolSize" value="${pool.corePoolSize}"/>
+              <property name="maximumPoolSize" value="${pool.maximumPoolSize}"/>
+              <property name="keepAliveTime" value="${pool.keepAliveTime}"/>
+              <property name="workQueue" value="${pool.workQueue}"/>
+       </bean>
+</beans>

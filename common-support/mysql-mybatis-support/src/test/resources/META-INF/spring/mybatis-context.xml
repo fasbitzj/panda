@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+       <aop:aspectj-autoproxy/>
+
+       <bean id="dataSource" class="com.panda.mysql.mybatis.support.orm.RoutingDataSource">
+              <property name="targetDataSources">
+                     <map key-type="java.lang.String" value-type="javax.sql.DataSource">
+                            <!-- write db -->
+                            <entry key="write" value-ref="defaultDataSource"/>
+                            <!-- read db -->
+                            <entry key="read" value-ref="slaveDataSource"/>
+                     </map>
+              </property>
+              <property name="defaultTargetDataSource" ref="defaultDataSource"/>
+              <property name="methodType">
+                     <map key-type="java.lang.String">
+                            <!-- read -->
+                            <entry key="read" value=",get,select,count,list,query,findOneByNameSQL"/>
+                            <!-- write -->
+                            <entry key="write" value=",add,create,update,delete,remove,deleteByNameSQL"/>
+                     </map>
+              </property>
+       </bean>
+
+       <bean id="defaultDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+              <property name="url" value="${jdbc.url}"/>
+              <property name="username" value="${jdbc.user}"/>
+              <property name="password" value="${jdbc.password}"/>
+              <property name="maxActive" value="${jdbc.maxPoolSize}"/>
+              <property name="initialSize" value="${jdbc.initialPoolSize}"/>
+              <property name="maxWait" value="10000"/>
+              <property name="timeBetweenConnectErrorMillis" value="30000"/>
+              <property name="minEvictableIdleTimeMillis" value="10000"/>
+              <property name="validationQuery" value="SELECT 'x'"/>
+              <property name="testWhileIdle" value="true"/>
+              <property name="testOnBorrow" value="false"/>
+              <property name="testOnReturn" value="false"/>
+       </bean>
+
+       <bean id="slaveDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+              <property name="url" value="${slave.jdbc.url}"/>
+              <property name="username" value="${slave.jdbc.user}"/>
+              <property name="password" value="${slave.jdbc.password}"/>
+              <property name="maxActive" value="${slave.jdbc.maxPoolSize}"/>
+              <property name="initialSize" value="${slave.jdbc.initialPoolSize}"/>
+              <property name="maxWait" value="10000"/>
+              <property name="timeBetweenConnectErrorMillis" value="30000"/>
+              <property name="minEvictableIdleTimeMillis" value="10000"/>
+              <property name="validationQuery" value="SELECT 'x'"/>
+              <property name="testWhileIdle" value="true"/>
+              <property name="testOnBorrow" value="false"/>
+              <property name="testOnReturn" value="false"/>
+       </bean>
+
+       <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+              <property name="dataSource" ref="dataSource"/>
+              <property name="configLocation" value="classpath:META-INF/conf/mybatis-config.xml"/>
+              <property name="mapperLocations" value="classpath:META-INF/namespaces/*.xml"/>
+       </bean>
+
+       <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+              <constructor-arg index="0" ref="sqlSessionFactory"/>
+       </bean>
+
+       <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+              <property name="dataSource" ref="dataSource"/>
+       </bean>
+
+       <bean id="txTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+              <constructor-arg type="org.springframework.transaction.PlatformTransactionManager" ref="txManager"/>
+       </bean>
+
+       <bean id="dataBatisDao" class="com.panda.mysql.mybatis.support.orm.DataBatisDao">
+              <property name="sqlSession" ref="sqlSession"/>
+              <property name="dataExecutor" ref="dataExecutor"/>
+       </bean>
+</beans>
